@@ -11,17 +11,15 @@ export const errorHandler = (
   next: NextFunction
 ) => {
   if (err instanceof RequestValidationError) {
-    // Take the errors array from express-validator and return a formatted object for each error
-    const formattedErrors = err.errors.map(error => {
-      return { message: error.msg, field: error.param };
-    });
     // Array of objects returned to errors object on the errors property
-    return res.status(400).send({ errors: formattedErrors });
+    // Makes use of the serialize errors function declared in the error file to return a consistant errors object
+    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   }
 
   if (err instanceof DatabaseConnectionError) {
     // Returns an array of objects with the reason field from the database connection error
-    return res.status(500).send({ errors: [{ message: err.reason }] });
+    // Makes use of the serialize errors function declared in the error file to return a consistant errors object
+    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   }
 
   res.status(400).send({
