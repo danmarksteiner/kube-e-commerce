@@ -1,4 +1,5 @@
 import express from 'express';
+import 'express-async-errors';
 import { json } from 'body-parser';
 
 import { currentUserRouter } from './routes/current-user';
@@ -18,10 +19,11 @@ app.use(signoutRouter);
 app.use(signupRouter);
 
 // If not a designated route throw a new not found 404 error
-app.all('*', () => {
+app.all('*', async () => {
   throw new NotFoundError();
 });
 
+// Include our error handling middleware
 app.use(errorHandler);
 
 app.listen(3000, () => {
