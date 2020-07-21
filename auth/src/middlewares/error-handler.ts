@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { RequestValidationError } from '../errors/request-validation-error';
-import { DatabaseConnectionError } from '../errors/database-connection-error';
+import { CustomError } from '../errors/custom-error';
 
 // Error handler middleware
 // Identifies the type of error set by the extended subclasses of Error potentionally thrown in the signup process
@@ -10,14 +9,8 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (err instanceof RequestValidationError) {
+  if (err instanceof CustomError) {
     // Array of objects returned to errors object on the errors property
-    // Makes use of the serialize errors function declared in the error file to return a consistant errors object
-    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
-  }
-
-  if (err instanceof DatabaseConnectionError) {
-    // Returns an array of objects with the reason field from the database connection error
     // Makes use of the serialize errors function declared in the error file to return a consistant errors object
     return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   }
