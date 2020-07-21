@@ -1,6 +1,7 @@
 import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
+import mongoose from 'mongoose';
 
 import { currentUserRouter } from './routes/current-user';
 import { signinRouter } from './routes/signin';
@@ -26,6 +27,26 @@ app.all('*', async () => {
 // Include our error handling middleware
 app.use(errorHandler);
 
-app.listen(3000, () => {
-  console.log('Listening on port 3000!!');
-});
+const start = async () => {
+  try {
+    // Connect to cluster IP service as the domain - taken from name of service in auth-mongo-depl.yaml
+    // Create auth database if it doesn't exist
+    await mongoose.connect('mongodb://auth-mongo-srv:27017/auth', {
+      // Configuration
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+    console.log('Connected to MongoDb');
+  } catch (err) {
+    // Capture error if there is one
+    console.error(err);
+  }
+
+  app.listen(3000, () => {
+    console.log('Listening on port 3000!!');
+  });
+};
+
+// Run start
+start();
