@@ -1,5 +1,6 @@
 // Mongoose User model to govern access to the user collection and determine how we add to, access or modify the data stored within it
 import mongoose from 'mongoose';
+import { Password } from '../services/password';
 
 // An interface that describes the properties that are required to create a new user
 interface UserAttrs {
@@ -30,6 +31,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+});
+
+// Middlware pre-save hook so we can securely salt, hash and save a submitted password
+// Done argument needs to be manually called to support asynchronous request in mongoose
+// Function keyword needed to access the document(user) being saved as 'this'
+userSchema.pre('save', async function (done) {
+  // Attempt to hash the password only if it's been modified - Stops double hashing if for example email is updated on a user
+  if (this.isModified('password')) {
+    // Get users password from document, pass to hash and assign to hashed
+    const hashed = await Password.toHash(this.get('password'));
+    // Update the password on the request
+    this.set('password', hashed);
+  }
+  // Manually invoke done
+  done();
 });
 
 // Custom 'build' function added to the model

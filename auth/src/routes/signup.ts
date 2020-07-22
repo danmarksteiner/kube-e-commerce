@@ -2,11 +2,13 @@ import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { User } from '../models/user';
 import { RequestValidationError } from '../errors/request-validation-error';
+import { BadRequestError } from '../errors/bad-request-error';
 
 const router = express.Router();
 
 router.post(
   '/api/users/signup',
+  // Validate the request using express-validator middleware
   [
     body('email').isEmail().withMessage('Email must be valid'),
     body('password')
@@ -30,9 +32,7 @@ router.post(
 
     // If email is in use
     if (existingUser) {
-      console.log('Email in use');
-      // Return early
-      return res.send({});
+      throw new BadRequestError('Email is in use');
     }
 
     // Build a new user using the function defined in the User model
