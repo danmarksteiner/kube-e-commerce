@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { User } from '../models/user';
 import { RequestValidationError } from '../errors/request-validation-error';
-import { DatabaseConnectionError } from '../errors/database-connection-error';
 
 const router = express.Router();
 
@@ -21,12 +21,27 @@ router.post(
       throw new RequestValidationError(errors.array());
     }
 
+    // Query User collection and check if the email is already in use
+    // Destructure email and password from the request
     const { email, password } = req.body;
 
-    console.log('Creating a user...');
-    throw new DatabaseConnectionError();
+    // Check against user collection
+    const existingUser = await User.findOne({ email });
 
-    res.send({});
+    // If email is in use
+    if (existingUser) {
+      console.log('Email in use');
+      // Return early
+      return res.send({});
+    }
+
+    // Build a new user using the function defined in the User model
+    const user = User.build({ email, password });
+    // Persist the new user to mongoDb
+    await user.save();
+
+    // Respond with a 201 created code and send the user back
+    res.status(201).send(user);
   }
 );
 
