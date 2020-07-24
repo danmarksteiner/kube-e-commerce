@@ -47,7 +47,9 @@ router.post(
         id: user.id,
         email: user.email,
       },
-      'asdf'
+      // Encode with our JWT_KEY secret defined as an env variable
+      // Disable TS checking on the environment variable as this is defined in index.ts
+      process.env.JWT_KEY!
     );
 
     // Set it on the session object
