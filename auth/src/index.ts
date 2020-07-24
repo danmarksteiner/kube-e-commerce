@@ -2,6 +2,7 @@ import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
 import mongoose from 'mongoose';
+import cookieSession from 'cookie-session';
 
 import { currentUserRouter } from './routes/current-user';
 import { signinRouter } from './routes/signin';
@@ -11,7 +12,23 @@ import { errorHandler } from './middlewares/error-handler';
 import { NotFoundError } from './errors/not-found-error';
 
 const app = express();
+
+// Trust the connection so that express is aware of the ingress-nginx proxy
+app.set('trust proxy', true);
+
+// Body parser json middleware
 app.use(json());
+
+// Cookie Session Middleware
+app.use(
+  cookieSession({
+    // Disable encryption as JWT is already tamper proof
+    // This will also improve compatability with other languages if needed in the future
+    signed: false,
+    // Require that cookies only be used over https
+    secure: true,
+  })
+);
 
 // Setup our API routes
 app.use(currentUserRouter);
