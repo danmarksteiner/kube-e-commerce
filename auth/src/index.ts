@@ -16,6 +16,7 @@ const app = express();
 // Trust the connection so that express is aware of the ingress-nginx proxy
 app.set('trust proxy', true);
 
+// Body parser json middleware
 app.use(json());
 
 // Cookie Session Middleware
