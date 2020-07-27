@@ -4,6 +4,7 @@ import { CustomError } from '../errors/custom-error';
 // Error handler middleware
 // Identifies the type of error set by the extended subclasses of Error potentionally thrown in the signup process
 export const errorHandler = (
+  // 4 arguments given to denote an error handling middleware to express
   err: Error,
   req: Request,
   res: Response,
