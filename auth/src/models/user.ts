@@ -22,16 +22,29 @@ interface UserDoc extends mongoose.Document {
 }
 
 // Schema tells mongoose about all the properties a user will have
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    // Edit the JSON response to remove the password, _v and re-assign _id from mongoose to just id
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.__v;
+      },
+    },
+  }
+);
 
 // Middlware pre-save hook so we can securely salt, hash and save a submitted password
 // Done argument needs to be manually called to support asynchronous request in mongoose
