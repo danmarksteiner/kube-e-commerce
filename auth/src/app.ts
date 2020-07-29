@@ -24,8 +24,8 @@ app.use(
     // Disable encryption as JWT is already tamper proof
     // This will also improve compatability with other languages if needed in the future
     signed: false,
-    // Require that cookies only be used over https
-    secure: true,
+    // Reads environmment variable to set secure to true if not in a test environment
+    secure: process.env.NODE_ENV !== 'test',
   })
 );
 
