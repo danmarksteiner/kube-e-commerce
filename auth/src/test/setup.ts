@@ -10,6 +10,10 @@ let mongo: any;
 // Also grants direct access to the database for easier testing
 // Hook function will run before all tests
 beforeAll(async () => {
+  // Manually set environment variable to be available for testing
+  process.env.JWT_KEY = 'asdf';
+
+  // Setup in memory mongoDb
   mongo = new MongoMemoryServer();
   const mongoUri = await mongo.getUri();
 
