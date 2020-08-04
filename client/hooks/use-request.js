@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 // A hook that takes in any request from the user, processes it and returns the response along with any errors formatted correctly
 // Resuable for all user api calls
-export default ({ url, method, body }) => {
+export default ({ url, method, body, onSuccess }) => {
   // Setup errors state
   const [errors, setErrors] = useState(null);
 
@@ -14,6 +14,11 @@ export default ({ url, method, body }) => {
       setErrors(null);
       // Set the method, url and body of the request taken from function call in the calling component
       const response = await axios[method](url, body);
+
+      if (onSuccess) {
+        onSuccess(response.data);
+      }
+
       // If successful return the response
       return response.data;
     } catch (err) {
